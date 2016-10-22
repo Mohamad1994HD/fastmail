@@ -1,5 +1,4 @@
 import click
-import os
 import email_sender
 import pickle
 
@@ -28,20 +27,7 @@ def config_group():
 @click.option('--layer',
               type=click.Choice(['ssl', 'tls']),
               help='Choose transport layer')
-@click.option('--ft/--nft', default=False,
-              help='first time use / not first time use')
-def configs(host, port, email, password, layer, ft):
-    if ft:
-        try:
-            with open(_conf_file_, "wb") as f:
-                pickle.dump({env_vars['port']: '',
-                             env_vars['host']: '',
-                             env_vars['username']: '',
-                             env_vars['password']: '',
-                             env_vars['tls']: False}, file=f)
-            return
-        except IOError as e:
-            click.echo("Config file was created, re-use the command and omit the --ft")
+def configs(host, port, email, password, layer):
 
     if not (host or port or email or password or layer):
         click.echo("Enter command [option]")
@@ -107,7 +93,24 @@ def send():
         click.echo('Error: ' + str(e))
 
 
+@click.command('init', help='Initialize fastmail')
+def init():
+
+    try:
+        with open(_conf_file_, "wb") as f:
+            pickle.dump({env_vars['port']: '',
+                         env_vars['host']: '',
+                         env_vars['username']: '',
+                         env_vars['password']: '',
+                         env_vars['tls']: False}, file=f)
+        click.echo("Initialized!")
+        return
+    except IOError as e:
+        click.echo(str(e))
+
+
 action_group.add_command(send)
+action_group.add_command(init)
 config_group.add_command(configs)
 cli = click.CommandCollection(sources=[action_group, config_group])
 
