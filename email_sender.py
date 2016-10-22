@@ -16,7 +16,7 @@ class InvalidMailException(MailException):
 
 class Mail:
 
-    def __init__(self, port=0, host='', usermail='', password='', tls=False):
+    def __init__(self, port=465, host='', usermail='', password='', tls=False):
         self.port = port
         self.host = host
         self.usermail = usermail
@@ -33,12 +33,13 @@ class Mail:
                                                                    body)
         if self.tls:
             server = smtplib.SMTP(host=self.host, port=self.port)
+            server.ehlo()
             server.starttls()
         else:
             server = smtplib.SMTP_SSL(host=self.host, port=self.port)
 
         try:
-            server.ehlo()
+            #server.ehlo()
             server.login(user=self.usermail, password=self.password)
             server.sendmail(from_addr=self.usermail, to_addrs=to, msg=msg)
             server.close()

@@ -1,12 +1,15 @@
 import click
 import os
 import email_sender
+import pickle
 
-env_vars = {'host': '_HOST_NAME_',
-           'port': '_PORT_NO_',
-           'username': '_USER_EMAIL_',
-           'password': '_USER_PASS_',
-           'tls': 'USE_TLS'}
+env_vars = {'host': '_HOST_',
+            'port': '_PORT_',
+            'username': '_USRMAIL_',
+            'password': '_PASS_',
+            'tls': '_TLS_'}
+
+_conf_file_ = 'config.p'
 
 @click.group()
 def config_group():
@@ -25,23 +28,51 @@ def config_group():
 @click.option('--layer',
               type=click.Choice(['ssl', 'tls']),
               help='Choose transport layer')
-def configs(host, port, email, password, layer):
-    if host:
-        os.environ[env_vars['host']] = host
-        click.echo(os.environ.get(env_vars['host']))
-    if port:
-        os.environ[env_vars['port']] = port
-        click.echo(os.environ.get(env_vars['port']))
+@click.option('--ft/--nft', default=False,
+              help='first time use / not first time use')
+def configs(host, port, email, password, layer, ft):
+    if ft:
+        try:
+            with open(_conf_file_, "wb") as f:
+                pickle.dump({env_vars['port']: '',
+                             env_vars['host']: '',
+                             env_vars['username']: '',
+                             env_vars['password']: '',
+                             env_vars['tls']: False}, file=f)
+            return
+        except IOError as e:
+            click.echo("Config file was created, re-use the command and omit the --ft")
 
-    if email:
-        os.environ[env_vars['username']] = email
-        click.echo(os.environ.get(env_vars['username']))
-    if password:
-        os.environ[env_vars['password']] = password
-        click.echo(os.environ.get(env_vars['password']))
-    if layer:
-        os.environ[env_vars['tls']] = '1' if layer == 'tls' else '0'
-        click.echo(os.environ.get(env_vars['tls']))
+    if not (host or port or email or password or layer):
+        click.echo("Enter command [option]")
+        return
+
+    try:
+        with open(_conf_file_, 'rb') as f:
+            conf = pickle.load(f)
+            #print type(conf)
+            if host:
+                conf[env_vars['host']] = host
+                click.echo(conf[env_vars['host']])
+            if port:
+                conf[env_vars['port']] = port
+                click.echo(conf[env_vars['port']])
+            if email:
+                conf[env_vars['username']] = email
+                click.echo(conf[env_vars['username']])
+            if password:
+                conf[env_vars['password']] = password
+                click.echo(conf[env_vars['password']])
+            if layer:
+                conf[env_vars['tls']] = 1 if layer == 'tls' else 0
+                click.echo(conf[env_vars['tls']])
+        with open(_conf_file_, 'wb') as f:
+            pickle.dump(conf, f)
+    except IOError as e:
+        click.echo(str(e))
+
+
+
 
 
 @click.group()
@@ -55,12 +86,19 @@ def send():
     subject = click.prompt('Subject')
     message = click.prompt('message')
 
+    conf = pickle.load(open(_conf_file_, "rb"))
+    port = conf[env_vars['port']]
+    host = conf[env_vars['host']]
+    usermail = conf[env_vars['username']]
+    password = conf[env_vars['password']]
+    tls = conf[env_vars['tls']]
+
     try:
-        email_sender.Mail(port=os.environ.get(env_vars['port']),
-                          host=os.environ.get(env_vars['host']),
-                          usermail=os.environ.get(env_vars['username']),
-                          password=os.environ.get(env_vars['password']),
-                          tls=bool(int(os.environ.get(env_vars['tls'])))
+        email_sender.Mail(port=port,
+                          host=host,
+                          usermail=usermail,
+                          password=password,
+                          tls=tls
                           ).send(subject=subject,
                                  body=message,
                                  to=to)
