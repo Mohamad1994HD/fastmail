@@ -1,18 +1,8 @@
 import smtplib
 import re
+import fastmail_exceptions
 
 mail_regex = re.compile('[^@]+@[^@]+\.[^@]+')
-
-
-class MailException(smtplib.SMTPException):
-    def __init__(self, message=''):
-        super(MailException, self).__init__(message)
-
-
-class InvalidMailException(MailException):
-    def __init__(self, message='Invalid Email'):
-        super(InvalidMailException, self).__init__(message)
-
 
 class Mail:
 
@@ -44,7 +34,7 @@ class Mail:
             server.sendmail(from_addr=self.usermail, to_addrs=to, msg=msg)
             server.close()
         except smtplib.SMTPException as e:
-            raise MailException(message=str(e))
+            raise fastmail_exceptions.MailException(message=str(e))
 
     def check_mail(self, mail):
         if re.match(mail_regex, mail):
