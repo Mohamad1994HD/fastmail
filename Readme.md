@@ -26,7 +26,7 @@
         The user will be prompted to enter the template file location (full path) - its better to have admin authorization
         when open the cli window-
         
-        The user will be prompted to enter key:value pairs of template keys in order to substitute them accordingly
+        The user will be prompted to enter key:value pairs of template keys as __JSON notation__ (easier for developers :D) in order to             substitute them accordingly
         as well as the indicator of the keys to  be detected will be required. (e.g. & or > or #) any symbol prefered to 
         mark a key.
   * **info**: Displayes the user configurations info
