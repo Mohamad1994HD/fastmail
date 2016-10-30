@@ -21,7 +21,15 @@
   
   * **init**: Initialize the tool (used only once after installation)
   
-  * **send**: Send the email message,
+  * **send**: Send the email message
+    * **--t/--n**: To use a predefined (t)emplate or (n)ot
+        The user will be prompted to enter the template file location (full path) - its better to have admin authorization
+        when open the cli window-
+        
+        The user will be prompted to enter key:value pairs of template keys in order to substitute them accordingly
+        as well as the indicator of the keys to  be detected will be required. (e.g. & or > or #) any symbol prefered to 
+        mark a key.
+  * **info**: Displayes the user configurations info
   
  
  
