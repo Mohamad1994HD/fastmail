@@ -39,7 +39,7 @@
   
   **2. ```fastmail config --port XXX --host XXX --email XXX --password XXX --layer XXX```**
   
-  **3. ```fastmail send -t\-n```**    
+  **3. ```fastmail send --t\--n```**    
   then the user will be prompted to enter reciever email, subject & message body
   
   
