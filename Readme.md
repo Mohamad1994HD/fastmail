@@ -42,6 +42,14 @@
   **3. ```fastmail send --t\--n```**    
   then the user will be prompted to enter reciever email, subject & message body
   
+  if a template was used it must be a (.txt) file:
+  Hello, Mr. %name
+  I am ... and i am %age years old
+  so i would like to go to %country
+  .
+  
+  then the key:vals will be a JSON like object:
+  "{'name':Quarky, 'age':32, 'country': 'Zimbaboe'}"
   
 
 ###You can find compiled binary of the tool for windows
